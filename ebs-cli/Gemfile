@@ -1,0 +1,9 @@
+source "http://rubygems.org"
+
+path ".." do
+  gem "sam-aws"
+  gem "sam-aws-cli-base"
+  gem "sam-ebs"
+end
+
+gemspec

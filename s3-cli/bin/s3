@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "s3/cli"
+S3::CLI::Main.start

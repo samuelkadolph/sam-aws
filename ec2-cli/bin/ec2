@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "ec2/cli"
+EC2::CLI::Main.start

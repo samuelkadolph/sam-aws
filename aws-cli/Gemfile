@@ -1,0 +1,16 @@
+source "http://rubygems.org"
+
+path ".." do
+  gem "sam-aws"
+  gem "sam-aws-cli-base"
+  gem "sam-ebs"
+  gem "sam-ebs-cli"
+  gem "sam-ec2"
+  gem "sam-ec2-cli"
+  gem "sam-rds"
+  gem "sam-rds-cli"
+  gem "sam-s3"
+  gem "sam-s3-cli"
+end
+
+gemspec

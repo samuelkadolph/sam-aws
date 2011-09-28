@@ -1,0 +1,18 @@
+PATH
+  remote: .
+  specs:
+    sam-aws (1.0.0)
+      net-http-persistent (~> 2.1)
+      nokogiri (~> 1.5.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    net-http-persistent (2.1)
+    nokogiri (1.5.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  sam-aws!

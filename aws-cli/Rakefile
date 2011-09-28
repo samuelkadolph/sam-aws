@@ -1,0 +1,11 @@
+GEMS = %w(ebs ebs:cli ec2 ec2:cli rds rds:cli s3 s3:cli)
+DIRS = %w(ebs ebs-cli ec2 ec2-cli rds rds-cli s3 s3-cli)
+
+namespace("aws") { load "../tasks/build.rake" }
+namespace("aws:cli:base") { load "../aws-cli-base/tasks/build.rake" }
+GEMS.zip(DIRS) do |name, dir|
+  namespace(name) { load File.expand_path("../../#{dir}/tasks/build.rake", __FILE__) }
+end
+
+load "tasks/build.rake"
+load "tasks/build/dependencies.rake"

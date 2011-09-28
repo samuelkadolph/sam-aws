@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "ebs/cli"
+EBS::CLI::Main.start

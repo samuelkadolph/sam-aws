@@ -1,0 +1,6 @@
+load "tasks/build.rake"
+
+namespace("aws") { load "../tasks/build.rake" }
+
+task "build" => "aws:build"
+task "install" => "aws:install"

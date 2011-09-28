@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "aws/cli"
+AWS::CLI::Main.start

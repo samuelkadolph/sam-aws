@@ -30,40 +30,30 @@ module AWS
       end
 
       def start_element(name, attributes = [])
-
-          puts "<#{name}>"
         if stack.empty?
           self.response = find_response(name).new(@http_response)
           stack.push(response)
-          # stack.push(name: name, type: :struct, proc: lambda { response })
         elsif name == "member"
-          stack.push(stack.last)
-          # noop
+          case array = stack.last
+          when ValueArray
+            # leave value array as top of stack
+          when StructArray
+            stack.push(array.new)
+          else
+            raise "encountered array when not expecting one"
+          end
         else
           property = stack.last.send(name)
-          case property
-          when Struct, ValueArray
-            stack.push(property)
-          when StructArray
-            stack.push(property.new)
-          else
-            # don't push into stack
-          end
 
-          # previous = stack.last
-          # current = { name: name, type: :field }
-          #
-          # case previous[:proc].call
-          # when Array
-          #   previous[:type] = :array
-          #   current[:proc] = lambda { previous[:proc].call.new }
-          # else
-          #   previous[:type] = :struct
-          #   current[:proc] = lambda { previous[:proc].call.send(name) }
-          # end
-          #
-          # stack.push(current)
+          case property
+          when Struct, StructArray, ValueArray
+            stack.push(property)
+          else
+            stack.push(name)
+          end
         end
+
+        self.buffer = ""
       end
 
       def characters(characters)
@@ -71,27 +61,23 @@ module AWS
       end
 
       def end_element(name)
-        puts "</#{name}>"
-        # self.buffer = "" unless stack.last.send()
-
-        unless buffer.empty?
-          value, self.buffer = buffer, ""
-
-          if name == "member"
-            puts
-            puts
-            puts stack
-            puts
-            p stack.last.class
-            p ValueArray === stack.last
-            stack.last.push(value.strip)
-          # elsif stack.last
-          elsif stack.last.send("#{name}") == nil
-            stack.last.send("#{name}=", value.strip)
+        if name == "member"
+          case stack.last
+          when Struct
+            stack.pop
+          else
+            stack.last << buffer
+          end
+        else
+          case property = stack.pop
+          when Struct, StructArray, ValueArray
+            # pop is all we have to do
+          when String
+            stack.last.send("#{property}=", buffer)
           end
         end
 
-        stack.pop
+        self.buffer = ""
       end
 
       protected

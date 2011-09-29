@@ -33,4 +33,4 @@ The sam-aws project consists of the following gems:
 
 ### Contributing
 
-See [/wiki/Contributing][/samuelkadolph/sam-aws/wiki/Contributing].
+See [/wiki/Contributing](/samuelkadolph/sam-aws/wiki/Contributing).

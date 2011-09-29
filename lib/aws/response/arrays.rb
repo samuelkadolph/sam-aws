@@ -7,8 +7,10 @@ module AWS
         end
       end
 
-      def ValueArray
-        Class.new(ValueArray)
+      def ValueArray(type)
+        Class.new(ValueArray).tap do |klass|
+          klass.type = type
+        end
       end
     end
 
@@ -25,32 +27,11 @@ module AWS
     end
 
     class ValueArray < ::Array
-    end
+      class << self
+        attr_accessor :type
+      end
 
-    # class Array
-    #   class << self
-    #     def new(struct)
-    #       klass = Class.new(::Array)
-    #       klass.class_eval do
-    #         def initialize
-    #           super
-    #         end
-    #
-    #         if struct
-    #           define_method(:new) do
-    #             struct.new.tap do |struct|
-    #               self << struct
-    #             end
-    #           end
-    #         else
-    #           define_method(:member=) do |value|
-    #             self << value
-    #           end
-    #         end
-    #       end
-    #       klass
-    #     end
-    #   end
-    # end
+      # TODO: handle type forcing
+    end
   end
 end

@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "elb/cli"
+ELB::CLI::Main.start

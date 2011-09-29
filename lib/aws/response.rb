@@ -4,9 +4,13 @@ module AWS
 
   class Response
     require "aws/response/arrays"
+    require "aws/response/field"
     require "aws/response/metadata"
     require "aws/response/parser"
+    require "aws/response/properties"
     require "aws/response/struct"
+
+    extend Properties
 
     class << self
       def inherited(klass)
@@ -20,47 +24,6 @@ module AWS
       def abstract_response?
         ABSTRACT_RESPONSES.include?(name)
       end
-
-      def properties
-        @properties ||= self < Response ? superclass.properties.dup : []
-      end
-
-      private
-        @@stack = []
-        def struct(name, &block)
-          build_property(name, build_struct(name, &block))
-        end
-
-        def array(name, &block)
-          if block_given?
-            array = StructArray(build_struct(name, &block))
-          else
-            array = ValueArray()
-          end
-
-          build_property(name, array)
-        end
-
-        def field(name)
-          build_property(name)
-        end
-
-        def build_struct(name)
-          @@stack << {}
-          yield
-          Struct.new(@@stack.pop)
-        end
-
-        def build_property(name, type = NilClass)
-          if @@stack.empty?
-            define_method(name) do
-              self[name] ||= type.new
-            end
-            properties << name
-          else
-            @@stack.last[name] = type
-          end
-        end
     end
 
     attr_reader :http_response
@@ -86,7 +49,7 @@ module AWS
     end
 
     def error
-      RuntimeError.new("TODO")
+      Error.new("TODO")
     end
 
     def error!
@@ -97,6 +60,10 @@ module AWS
       http_response.code =~ /\A1/
     end
     alias info? informational?
+
+    def properties
+      self.class.properties
+    end
 
     def redirect?
       http_response.code =~ /\A3/
@@ -110,7 +77,7 @@ module AWS
 
     protected
       def properties_for_inspect
-        " properties: " << self.class.properties.join(", ") unless self.class.properties.empty?
+        " properties: " << self.properties.keys.join(", ") unless self.properties.empty?
       end
   end
 
@@ -131,17 +98,7 @@ module AWS
     end
 
     def error
-      RuntimeError.new("#{self.Error.Code}: #{self.Error.Message}")
+      Error.new("#{self.Error.Code}: #{self.Error.Message}")
     end
   end
 end
-
-class Blah < AWS::Response
-  struct "a" do
-    array "b"
-    array "c" do
-      field "d"
-    end
-  end
-end
-

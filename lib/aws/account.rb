@@ -1,4 +1,5 @@
 module AWS
+  require "aws/mixins/bang"
   require "aws/mixins/options"
 
   class Account
@@ -6,6 +7,7 @@ module AWS
     require "aws/account/region"
     require "aws/account/versioning"
 
+    extend Mixins::Bang
     extend Mixins::Options
 
     DEFAULT_OPTIONS = {}
@@ -47,6 +49,11 @@ module AWS
       end
 
     private
+      def bang(response)
+        response.error! if response.error?
+        response
+      end
+
       def connection
         @connection ||= Connection.new(self, options)
       end
@@ -56,9 +63,7 @@ module AWS
       end
 
       def get!(*args)
-        response = get(*args)
-        response.error! if response.error?
-        response
+        bang get(*args)
       end
 
       def post(*args)
@@ -66,9 +71,7 @@ module AWS
       end
 
       def post!(*args)
-        response = post(*args)
-        response.error! if response.error?
-        response
+        bang post(*args)
       end
   end
 end

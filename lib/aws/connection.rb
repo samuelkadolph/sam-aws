@@ -34,18 +34,15 @@ module AWS
 
     protected
       def perform(request)
-        @http ||= Net::HTTP::Persistent.new("sam-aws")#.tap { |h| h.debug_output = $stderr }
+        @http ||= Net::HTTP::Persistent.new("sam-aws")
 
         request.clone.tap do |request|
           request.headers["Accept"] ||= "application/xml"
           request.headers["User-Agent"] ||= user_agent
 
           @http.connection_for(request.uri).request_get(request.uri.request_uri, request.headers) do |http_response|
-            # return http_response.body
-            puts http_response.body
             Response::Parser.new(http_response) do |parser|
-              # http_response.read_body { |part| parser << part }
-              parser << http_response.body
+              http_response.read_body { |part| parser << part }
               parser.finish
               return parser.response
             end

@@ -1,9 +1,10 @@
 require "aws"
+require "aws/cli/base"
 require "ebs/cli"
 require "ec2/cli"
+require "elb/cli"
 require "rds/cli"
 require "s3/cli"
-require "thor"
 
 module AWS
   module CLI
@@ -13,6 +14,9 @@ module AWS
 
       desc "ec2", "Describe available EC2 commands or run a command"
       subcommand "ec2", EC2::CLI::Main
+
+      desc "elb", "Describe available ELB commands or run a command"
+      subcommand "elb", ELB::CLI::Main
 
       # desc "rds", "Describe available RDS commands or run a command"
       # subcommand "rds", RDS::CLI::Main

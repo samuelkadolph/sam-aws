@@ -1,11 +1,11 @@
 # sam-aws-cli
 
-sam-aws-cli combines all of the sam-aws cli gems into one executable with subcommands for each cli gem.
+sam-aws-cli combines all of the sam-aws cli gems into one executable, called aws, with subcommands for each cli gem.
 
 ## Description
 
-sam-aws-cli combines the sam-ebs-cli, sam-ec2-cli, sam-rds-cli and sam-s3-cli gems into one executable for convenience.
-Provides an executable
+sam-aws-cli combines the sam-ebs-cli, sam-ec2-cli, sam-elb-cli, sam-rds-cli and sam-s3-cli gems into one executable for
+convenience. Provides an executable, called aws, that combines all of the cli gems into subcommands.
 
 ## Installing
 
@@ -38,10 +38,10 @@ aws s3 list-buckets
 
 ### Credentials
 
-See [/wiki/Credentials][/samuelkadolph/sam-aws/wiki/Credentials].
+See [/wiki/Credentials](/samuelkadolph/sam-aws/wiki/Credentials).
 
 ## Developers
 
 ### Contributing
 
-See [/wiki/Contributing][/samuelkadolph/sam-aws/wiki/Contributing].
+See [/wiki/Contributing](/samuelkadolph/sam-aws/wiki/Contributing).

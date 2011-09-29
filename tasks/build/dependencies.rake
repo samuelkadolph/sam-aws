@@ -9,10 +9,9 @@ LIBRARY_GEMS.each do |name|
   task "#{name}:install" => "install"
 end
 
-EXECUTABLE_GEMS.each do |name|
-  parent = name.gsub(/:cli/, "")
-  task "#{name}:build" => %W[aws:cli:base:build #{parent}:build]
-  task "#{name}:install" => %W[aws:cli:base:install #{parent}:install]
+EXECUTABLE_GEMS.zip(LIBRARY_GEMS).each do |name, library|
+  task "#{name}:build" => %W[aws:cli:base:build #{library}:build]
+  task "#{name}:install" => %W[aws:cli:base:install #{library}:install]
   task "aws:cli:build" => "#{name}:build"
   task "aws:cli:install" => "#{name}:install"
 end

@@ -1,19 +1,25 @@
 module AWS
   class Response
+    class << self
+      def Struct(*args)
+        Struct.new(*args)
+      end
+    end
+
     class Struct < ::Struct
       class << self
-        attr_accessor :values
+        attr_accessor :properties
 
         def new(properties)
           super(nil, *properties.keys).tap do |struct|
-            struct.values = properties.values
+            struct.properties = properties
           end
         end
       end
 
       def initialize
-        super(*self.class.values.map(&:new))
-       end
+        super(*self.class.properties.values.map(&:new))
+      end
     end
   end
 end

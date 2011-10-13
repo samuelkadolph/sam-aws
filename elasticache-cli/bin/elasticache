@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "elasticache/cli"
+ElastiCache::CLI::Main.start

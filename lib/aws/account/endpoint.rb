@@ -1,8 +1,12 @@
+require "active_support/concern"
+
 module AWS
   class Account
     module Endpoint
-      def self.included(klass)
-        klass.send(:option_reader, :endpoint)
+      extend ActiveSupport::Concern
+
+      included do
+        option_reader :endpoint
       end
 
       def initialize(options = {})
@@ -11,12 +15,15 @@ module AWS
       end
 
       private
-        def get(*args)
-          super(endpoint, *args)
-        end
+        def auto(*args)   super(*add_endpoint(args)) end
+        def delete(*args) super(*add_endpoint(args)) end
+        def get(*args)    super(*add_endpoint(args)) end
+        def post(*args)   super(*add_endpoint(args)) end
 
-        def post(*args)
-          super(endpoint, *args)
+        def add_endpoint(args)
+          uri = URI(endpoint)
+          uri += args.shift if args.first.is_a?(String)
+          [uri, *args]
         end
     end
   end

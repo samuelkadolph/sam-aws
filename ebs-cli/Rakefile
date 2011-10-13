@@ -3,10 +3,13 @@ load "tasks/build.rake"
 namespace("aws") { load "../tasks/build.rake" }
 namespace("aws:cli:base") { load "../aws-cli-base/tasks/build.rake" }
 namespace("ebs") { load "../ebs/tasks/build.rake" }
+namespace("s3") { load "../ebs/tasks/build.rake" }
 
 task "aws:cli:base:build" => "aws:build"
 task "aws:cli:base:install" => "aws:install"
 task "ebs:build" => "aws:build"
 task "ebs:install" => "aws:install"
-task "build" => %w[aws:cli:base:build ebs:build]
-task "install" => %w[aws:cli:base:install ebs:install]
+task "s3:build" => "aws:build"
+task "s3:install" => "aws:install"
+task "build" => %w[aws:cli:base:build ebs:build s3:build]
+task "install" => %w[aws:cli:base:install ebs:install s3:install]

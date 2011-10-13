@@ -1,60 +1,102 @@
+require "active_support/core_ext/hash/reverse_merge"
 require "net/http"
 require "net/http/persistent"
 require "openssl"
-require "rbconfig"
 
 module AWS
-  require "aws/mixins/options"
+  require "aws/options"
 
   class Connection
-    extend Mixins::Options
+    require "aws/connection/body"
+    require "aws/connection/params"
+    require "aws/connection/query"
+
+    include Options
 
     DEFAULT_OPTIONS = {
-      authenticator: Authenticator,
+      authenticator: Version2Authenticator,
       default_headers: {},
       default_query: {},
       expires_offset: 30,
-      user_agent: "sam-aws/#{AWS::VERSION} (#{RbConfig::CONFIG["host"]}; ruby/#{RUBY_VERSION}; OpenSSL/#{OpenSSL::VERSION})"
+      user_agent: "sam-aws/#{AWS::VERSION} (#{RUBY_DESCRIPTION}; OpenSSL/#{OpenSSL::VERSION})"
     }
 
     attr_reader :account, :options
     option_reader :authenticator, :default_headers, :default_query, :expires_offset, :user_agent
 
-    def initialize(account, options = {}, defaults = DEFAULT_OPTIONS)
-      @account, @options = account, defaults.merge(options)
+    @@http = Net::HTTP::Persistent.new("sam-aws")
+    @@http.debug_output = $stderr
+
+    def initialize(account, options = {})
+      @account, @options = account, self.class::DEFAULT_OPTIONS.merge(options)
     end
 
-    def get(uri, query = {}, headers = {})
-      request(:get, uri, nil, query)
+    def auto(uri, params = {}, headers = {}, &block)
+      handle_action_block(params, Params, &block)
+      request(:auto, uri, params, {}, nil, headers)
     end
 
-    def post(uri, data = nil, query = {}, headers = {})
-      request(:post, uri, data, query)
+    def delete(uri, query = {}, headers = {}, &block)
+      handle_action_block(query, Query, &block)
+      request(:delete, uri, {}, query, nil, headers)
+    end
+
+    def get(uri, query = {}, headers = {}, &block)
+      handle_action_block(query, Query, &block)
+      request(:get, uri, {}, query, nil, headers)
+    end
+
+    def post(uri, body = nil, headers = {})
+      if block_given?
+        body = Body.new
+        body.instance_exec(body, &block)
+        headers["Content-Type"] = body.type
+      end
+      request(:post, uri, nil, nil, body, headers)
     end
 
     protected
+      def parse(response)
+        case response["Content-Type"]
+        when %r[\A(?:text|application)/xml]
+          Response::Parser.new(response) do |parser|
+            # puts response.body
+            # parser << response.body
+            response.read_body { |part| parser << part }
+          end.response
+        else
+          raise Error, "unacceptable content type from server"
+        end
+      end
+
       def perform(request)
-        @http ||= Net::HTTP::Persistent.new("sam-aws")
-
         request.clone.tap do |request|
-          request.headers["Accept"] ||= "application/xml"
+          request.headers["Accept"] ||= "text/xml;application/xml"
           request.headers["User-Agent"] ||= user_agent
+          request.headers.reverse_merge!(default_headers)
+          request.query.reverse_merge!(default_query)
 
-          @http.connection_for(request.uri).request_get(request.uri.request_uri, request.headers) do |http_response|
-            Response::Parser.new(http_response) do |parser|
-              http_response.read_body { |part| parser << part }
-              parser.finish
-              return parser.response
-            end
+          auth = authenticator.new(account, request)
+          request = auth.sign(expires: Time.now + expires_offset, time: Time.now)
+
+          request.perform(@@http) do |response|
+            return parse(response)
           end
         end
       end
 
-      def request(method, uri, data = nil, query = {}, headers = {})
-        request = Request.new(uri, method, headers)
-        request.query.merge!(default_query).merge!(query)
-        request = authenticator.new(account, request).request_with_signature(Time.now + expires_offset)
+      def request(method, uri, params = {}, query = {}, body = nil, headers = {})
+        request = Request.new(method, uri, params, query, body, headers).wrapper
         perform(request)
+      end
+
+    private
+      def handle_action_block(hash, klass, &block)
+        if block_given?
+          extra = klass.new
+          extra.instance_exec(extra, &block)
+          hash.merge!(extra)
+        end
       end
   end
 end

@@ -1,210 +1,151 @@
-require "aws/response"
-
 module EBS
-  class CheckDNSAvailabilityResponse < AWS::MetadataResponse
-    struct "CheckDNSAvailabilityResult" do
-      field "Available"
-      field "FullyQualifiedCNAME"
+  class CheckDNSAvailabilityResponse < Response
+    struct :check_dns_availability_result do
+      check_dns_availability_result
     end
   end
 
-  class CreateApplicationResponse < AWS::MetadataResponse
-    struct "CreateApplicationResult" do
-      struct "Application" do
-        field "ApplicationName"
-        field "ConfigurationTemplates"
-        field "DateCreated"
-        field "DateUpdated"
-        field "Description"
-        field "Versions"
-      end
+  class CreateApplicationResponse < Response
+    struct :create_application_result do
+      create_application_result
     end
   end
 
-  class CreateApplicationVersionResponse < AWS::MetadataResponse
-    struct "CreateApplicationVersionResult" do
-      struct "ApplicationVersion" do
-        field "ApplicationName"
-        field "DateCreated"
-        field "DateUpdated"
-        field "Description"
-        struct "SourceBundle" do
-          field "S3Bucket"
-          field "S3Key"
-        end
-        field "VersionLabel"
-      end
+  class CreateApplicationVersionResponse < Response
+    struct :create_application_version_result do
+      create_application_version_result
     end
   end
 
-  class CreateConfigurationTemplateResponse < AWS::MetadataResponse
-    struct "CreateConfigurationTemplateResult" do
-      field "ApplicationName"
-      field "DateCreated"
-      field "DateUpdated"
-      field "DeploymentStatus"
-      field "Description"
-      field "EnvironmentName"
-      array "OptionSettings" do
-        field "Namespace"
-        field "OptionName"
-        field "Value"
-      end
-      field "SolutionStackName"
-      field "TemplateName"
+  class CreateConfigurationTemplateResponse < Response
+    struct :create_configuration_template_result do
+      configuration_settings_description
     end
   end
 
-  class CreateEnvironmentResponse < AWS::MetadataResponse
-    struct "CreateEnvironmentResult" do
-      field "ApplicationName"
-      field "CNAME"
-      field "DateCreated"
-      field "DateUpdated"
-      field "Description"
-      field "EndpointURL"
-      field "EnvironmentId"
-      field "EnvironmentName"
-      field "Health"
-      struct "Resources" do
-        field "LoadBalancer"
-      end
-      field "SolutionStackName"
-      field "Status"
-      field "TemplateName"
-      field "VersionLabel"
+  class CreateEnvironmentResponse < Response
+    struct :create_environment_result do
+      create_environment_result
     end
   end
 
-  class CreateStorageLocationResponse < AWS::MetadataResponse
-    struct "CreateStorageLocationResult" do
-      field "S3Bucket"
+  class CreateStorageLocationResponse < Response
+    struct :create_storage_location_result do
+      create_storage_location_result
     end
   end
 
-  class DeleteApplicationResponse < AWS::MetadataResponse
+  class DeleteApplicationResponse < Response
   end
 
-  class DeleteApplicationVersionResponse < AWS::MetadataResponse
+  class DeleteApplicationVersionResponse < Response
   end
 
-  class DeleteConfigurationTemplateResponse < AWS::MetadataResponse
+  class DeleteConfigurationTemplateResponse < Response
   end
 
-  class DeleteEnvironmentConfigurationResponse < AWS::MetadataResponse
+  class DeleteEnvironmentConfigurationResponse < Response
   end
 
-  class DescribeApplicationVersionsResponse < AWS::MetadataResponse
-    struct "DescribeApplicationVersionsResult" do
-      array "ApplicationVersions" do
-        field "ApplicationName"
-        field "DateCreated"
-        field "DateUpdated"
-        field "Description"
-        struct "SourceBundle" do
-          field "S3Bucket"
-          field "S3Key"
-        end
-        field "VersionLabel"
-      end
+  class DescribeApplicationVersionsResponse < Response
+    struct :describe_application_versions_result do
+      describe_application_versions_result
     end
   end
 
-  class DescribeApplicationsResponse < AWS::MetadataResponse
-    struct "DescribeApplicationsResult" do
-      array "Applications" do
-        field "ApplicationName"
-        field "ConfigurationTemplates"
-        field "DateCreated"
-        field "DateUpdated"
-        field "Description"
-        array "Versions"
-      end
+  class DescribeApplicationsResponse < Response
+    struct :describe_applications_result do
+      describe_applications_result
     end
   end
 
-  class DescribeConfigurationOptionsResponse < AWS::MetadataResponse
-    struct "DescribeConfigurationOptionsResult" do
+  class DescribeConfigurationOptionsResponse < Response
+    struct :describe_configuration_options_result do
+      describe_configuration_options_result
     end
   end
 
-  class DescribeConfigurationSettingsResponse < AWS::MetadataResponse
-    struct "DescribeConfigurationSettingsResult" do
+  class DescribeConfigurationSettingsResponse < Response
+    struct :describe_configuration_settings_result do
+      describe_configuration_settings_result
     end
   end
 
-  class DescribeEnvironmentResourcesResponse < AWS::MetadataResponse
-    struct "DescribeEnvironmentResourcesResult" do
+  class DescribeEnvironmentResourcesResponse < Response
+    struct :describe_environment_resources_result do
+      describe_environment_resources_result
     end
   end
 
-  class DescribeEnvironmentsResponse < AWS::MetadataResponse
-    struct "DescribeEnvironmentsResult" do
+  class DescribeEnvironmentsResponse < Response
+    struct :describe_environments_result do
+      describe_environments_result
     end
   end
 
-  class DescribeEventsResponse < AWS::MetadataResponse
-    struct "DescribeEventsResult" do
+  class DescribeEventsResponse < Response
+    struct :describe_events_result do
+      describe_events_result
     end
   end
 
-  class ListAvailableSolutionStacksResponse < AWS::MetadataResponse
-    struct "ListAvailableSolutionStacksResult" do
+  class ListAvailableSolutionStacksResponse < Response
+    struct :list_available_solution_stacks_result do
+      list_available_solution_stacks_result
     end
   end
 
-  class RebuildEnvironmentResponse < AWS::MetadataResponse
-    struct "RebuildEnvironmentResult" do
+  class RebuildEnvironmentResponse < Response
+  end
+
+  class RequestEnvironmentInfoResponse < Response
+  end
+
+  class RestartAppServerResponse < Response
+  end
+
+  class RetrieveEnvironmentInfoResponse < Response
+    struct :retrieve_environment_info_result do
+      retrieve_environment_info_result
     end
   end
 
-  class RequestEnvironmentInfoResponse < AWS::MetadataResponse
-    struct "RequestEnvironmentInfoResult" do
+  class SwapEnvironmentCNAMEsResponse < Response
+  end
+
+  class TerminateEnvironmentResponse < Response
+    struct :terminate_environment_result do
+      terminate_environment_result
     end
   end
 
-  class RestartAppServerResponse < AWS::MetadataResponse
-    struct "RestartAppServerResult" do
+  class UpdateApplicationResponse < Response
+    struct :update_application_result do
+      update_application_result
     end
   end
 
-  class RetrieveEnvironmentInfoResponse < AWS::MetadataResponse
-    struct "RetrieveEnvironmentInfoResult" do
+  class UpdateApplicationVersionResponse < Response
+    struct :update_application_version_result do
+      update_application_version_result
     end
   end
 
-  class SwapEnvironmentCNAMEsResponse < AWS::MetadataResponse
-    struct "SwapEnvironmentCNAMEsResult" do
+  class UpdateConfigurationTemplateResponse < Response
+    struct :update_configuration_template_result do
+      update_configuration_template_result
     end
   end
 
-  class TerminateEnvironmentResponse < AWS::MetadataResponse
-    struct "TerminateEnvironmentResult" do
+  class UpdateEnvironmentResponse < Response
+    struct :update_environment_result do
+      update_environment_result
     end
   end
 
-  class UpdateApplicationResponse < AWS::MetadataResponse
-    struct "UpdateApplicationResult" do
-    end
-  end
-
-  class UpdateApplicationVersionResponse < AWS::MetadataResponse
-    struct "UpdateApplicationVersionResult" do
-    end
-  end
-
-  class UpdateConfigurationTemplateResponse < AWS::MetadataResponse
-    struct "UpdateConfigurationTemplateResult" do
-    end
-  end
-
-  class UpdateEnvironmentResponse < AWS::MetadataResponse
-    struct "UpdateEnvironmentResult" do
-    end
-  end
-
-  class ValidateConfigurationSettingsResponse < AWS::MetadataResponse
-    struct "ValidateConfigurationSettingsResult" do
+  class ValidateConfigurationSettingsResponse < Response
+    struct :validate_configuration_settings_result do
+      validate_configuration_settings_result
     end
   end
 end

@@ -4,34 +4,56 @@ require "thor"
 
 module AWS
   module CLI
+    require "aws/cli/all"
+    require "aws/cli/ec2_security_group"
+    require "aws/cli/tables"
+    require "aws/cli/waiting"
+
     class Base < Thor
-      include Thor::Actions
+      include Actions
+      include All
+      include EC2SecurityGroup
+      include Tables
+      include Waiting
 
       class << self
-        def banner(task, namespace = true, subcommand = false)
-          if subcommand
-            "#{basename} #{task.formatted_usage(self, true, subcommand)}"
-          else
-            super
+        protected
+          def banner(task, namespace = true, subcommand = false)
+            if subcommand
+              "#{basename} #{task.formatted_usage(self, true, subcommand)}"
+            else
+              super
+            end
           end
-        end
 
-        def default_credentials_file
-          ENV["AWS_CREDENTIAL_FILE"] || File.expand_path("~/.aws-credentials")
-        end
+          def default_credentials_file
+            ENV["AWS_CREDENTIAL_FILE"] || File.expand_path("~/.aws-credentials")
+          end
+
+        private
+          def can_wait_until_available
+            method_option :wait_until_available, aliases: "-w", default: false, type: :boolean
+            method_option :wait_until_available_delay, aliases: "-W", default: 5, type: :numeric
+          end
       end
 
-      method_option :debug, desc: "Enables debugging mode", aliases: %w(-d),
-                            type: :boolean
-      method_option :verbose, desc: "Enables verbose mode", aliases: %w(-v),
-                              type: :boolean
-      method_option :access_key, desc: "Specify the AWS access key to use", banner: "KEY"
-      method_option :secret_key, desc: "Specify the AWS secret key to use", banner: "KEY"
-      method_option :prompt_secret_key, desc: "Reads the secret key in from STDIN instead of as an argument", type: :boolean
-      method_option :credentials_file, desc: "Override the path to the credentials file", banner: "FILE",
-                                       type: :string, default: default_credentials_file
+      method_option :debug, aliases: "-D", type: :boolean,
+                    desc: "Enables debugging mode"
+      method_option :verbose, aliases: "-V", type: :boolean,
+                    desc: "Enables verbose mode"
+      method_option :access_key, aliases: "-A", banner: "KEY", desc: "Specify the AWS access key to use"
+      method_option :secret_key, aliases: "-S", banner: "KEY", desc: "Specify the AWS secret key to use"
+      # method_option :prompt_secret_key, type: :boolean, desc: "Reads the secret key in from STDIN instead of as an argument"
+      method_option :credentials_file, aliases: "-C", banner: "FILE", default: default_credentials_file,
+                    desc: "Override the path to the credentials file"
       def initialize(*)
         super
+      end
+
+      map "-v" => "version"
+      desc "version", "Prints the version of sam-aws"
+      def version
+        say "sam-aws #{AWS::VERSION}"
       end
 
       no_tasks do
@@ -61,26 +83,26 @@ module AWS
         def get_credentials
           if (access_key, secret_key = get_credentials_from_options).any?
             message = "You must provide you AWS %s with --%s."
-            raise Thor::Error, message % ["access key", "access-key"] unless access_key
-            raise Thor::Error, message % ["secret key", "secret-key"] unless secret_key
+            raise Error, message % ["access key", "access-key"] unless access_key
+            raise Error, message % ["secret key", "secret-key"] unless secret_key
             return access_key, secret_key
           end
 
           if (access_key, secret_key = get_credentials_from_file(options[:credentials_file])).any?
             message = "Your credential file '#{options[:credentials_file]}' did not set %s."
-            raise Thor::Error, message % "AWSAccessKeyId" unless access_key
-            raise Thor::Error, message % "AWSSecretKey" unless secret_key
+            raise Error, message % "AWSAccessKeyId" unless access_key
+            raise Error, message % "AWSSecretKey" unless secret_key
             return access_key, secret_key
           end
 
           if (access_key, secret_key = get_credentials_from_env).any?
             message = "You must set the %s environment variable."
-            raise Thor::Error, message % "AWS_ACCESS_KEY" unless access_key
-            raise Thor::Error, message % "AWS_SECRET_KEY" unless secret_key
+            raise Error, message % "AWS_ACCESS_KEY" unless access_key
+            raise Error, message % "AWS_SECRET_KEY" unless secret_key
             return access_key, secret_key
           end
 
-          raise Thor::Error, "You must have a --credentials-file or specify your keys with --access-key and --secret-key."
+          raise Error, "You must have a --credentials-file or specify your keys with --access-key and --secret-key."
         end
 
         def get_credentials_from_options
@@ -104,6 +126,18 @@ module AWS
 
         def get_credentials_from_env
           [ENV["AWS_ACCESS_KEY"], ENV["AWS_SECRET_KEY"]]
+        end
+
+        def wait_until_available(what, method = :Status, available = "available")
+          return unless options[:wait_until_available] and what.send(method) != available
+
+          print "Waiting for #{method} to become #{available}"
+          while what.send(method) != available
+            sleep options[:wait_until_available_delay]
+            print "."
+            what = yield
+          end
+          puts " done!"
         end
     end
   end

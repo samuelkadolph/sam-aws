@@ -1,14 +1,16 @@
 module AWS
-  require "aws/mixins/bang"
-  require "aws/mixins/options"
+  require "aws/options"
 
   class Account
+    require "aws/account/all"
+    require "aws/account/bang"
     require "aws/account/endpoint"
     require "aws/account/region"
     require "aws/account/versioning"
 
-    extend Mixins::Bang
-    extend Mixins::Options
+    include All
+    include Bang
+    include Options
 
     DEFAULT_OPTIONS = {}
 
@@ -19,6 +21,13 @@ module AWS
       @options = self.class::DEFAULT_OPTIONS.merge(options)
       raise ArgumentError, ":access_key must be set" unless access_key
       raise ArgumentError, ":secret_key must be set" unless secret_key
+    end
+
+    def account_id
+      @account_id ||= begin
+        result = auto("https://iam.amazonaws.com", "Action" => "GetUser", "Version" => "2010-05-08").get_user_result
+        result.user.user_id
+      end
     end
 
     def inspect
@@ -58,20 +67,24 @@ module AWS
         @connection ||= Connection.new(self, options)
       end
 
-      def get(*args)
-        connection.get(*args)
+      def auto(*args, &block)
+        connection.auto(*args, &block)
       end
+      bang :auto
 
-      def get!(*args)
-        bang get(*args)
+      def delete(*args, &block)
+        connection.delete(*args, &block)
       end
+      bang :delete
 
-      def post(*args)
-        connection.post(*args)
+      def get(*args, &block)
+        connection.get(*args, &block)
       end
+      bang :get
 
-      def post!(*args)
-        bang post(*args)
+      def post(*args, &block)
+        connection.post(*args, &block)
       end
+      bang :post
   end
 end

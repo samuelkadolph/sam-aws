@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "r53/cli"
+R53::CLI::Main.start

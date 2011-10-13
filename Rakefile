@@ -1,5 +1,5 @@
-GEMS = %w(ebs ebs:cli ec2 ec2:cli elb elb:cli rds rds:cli s3 s3:cli)
-DIRS = %w(ebs ebs-cli ec2 ec2-cli elb elb-cli rds rds-cli s3 s3-cli)
+GEMS = %W[ebs ebs:cli ec2 ec2:cli elasticache elasticache:cli elb elb:cli r53 r53:cli rds rds:cli s3 s3:cli ses ses:cli]
+DIRS = %W[ebs ebs-cli ec2 ec2-cli elasticache elasticache-cli elb elb-cli r53 r53-cli rds rds-cli s3 s3-cli ses ses-cli]
 
 load "tasks/build.rake"
 load "tasks/build/dependencies.rake"

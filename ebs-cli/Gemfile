@@ -4,6 +4,7 @@ path ".." do
   gem "sam-aws"
   gem "sam-aws-cli-base"
   gem "sam-ebs"
+  gem "sam-s3"
 end
 
 gemspec

@@ -4,8 +4,8 @@ sam-aws-cli combines all of the sam-aws cli gems into one executable, called aws
 
 ## Description
 
-sam-aws-cli combines the sam-ebs-cli, sam-ec2-cli, sam-elb-cli, sam-rds-cli and sam-s3-cli gems into one executable for
-convenience. Provides an executable, called aws, that combines all of the cli gems into subcommands.
+sam-aws-cli combines the sam-aws cli gems into one executable for convenience. Makes all of the cli gems available as
+subcommands in an executable called aws.
 
 ## Installing
 
@@ -24,14 +24,26 @@ cd sam-aws/aws-cli && rake install
 
 ## Usage
 
-Since this gem combines all of the sam-aws cli gems into one executable, you can use them normally as subcommands of the
-`aws` executable.
-
 ```
-aws ebs describe-applications
-aws ec2 describe-instances
-aws rds describe-db-instances
-aws s3 list-buckets
+Tasks:
+  aws ebs                        # Describe available Elastic Beanstalk commands or run a command
+  aws ec2                        # Describe available Elastic Compute Cloud commands or run a command
+  aws elasticache                # Describe available ElastiCache commands or run a command
+  aws elb                        # Describe available Elastic Load Balancer commands or run a command
+  aws generate-credentials-file  # Generates a credentials file saved to the path given by --credentials
+  aws help [TASK]                # Describe available tasks or one specific task
+  aws r53                        # Describe available Route53 commands or run a command
+  aws rds                        # Describe available Relational Database Service commands or run a command
+  aws ses                        # Describe available Simple Email Service commands or run a command
+  aws version                    # Prints the version of sam-aws
+
+Options:
+  -D, [--debug]                  # Enables debugging mode
+  -V, [--verbose]                # Enables verbose mode
+  -A, [--access-key=KEY]         # Specify the AWS access key to use
+  -S, [--secret-key=KEY]         # Specify the AWS secret key to use
+  -C, [--credentials-file=FILE]  # Override the path to the credentials file
+                                 # Default: ~/.aws-credentials
 ```
 
 ## Requirements

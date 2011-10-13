@@ -1,0 +1,12 @@
+load "tasks/build.rake"
+
+namespace("aws") { load "../tasks/build.rake" }
+namespace("aws:cli:base") { load "../aws-cli-base/tasks/build.rake" }
+namespace("r53") { load "../r53/tasks/build.rake" }
+
+task "aws:cli:base:build" => "aws:build"
+task "aws:cli:base:install" => "aws:install"
+task "r53:build" => "aws:build"
+task "r53:install" => "aws:install"
+task "build" => %w[aws:cli:base:build r53:build]
+task "install" => %w[aws:cli:base:install r53:install]

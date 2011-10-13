@@ -1,16 +1,16 @@
+require "active_support/core_ext/module/delegation"
+
 module AWS
   RESPONSES = {}
-  ABSTRACT_RESPONSES = %W[AWS::Response AWS::MetadataResponse]
+  ABSTRACT_RESPONSES = %W[AWS::Response]
 
   class Response
-    require "aws/response/arrays"
-    require "aws/response/field"
-    require "aws/response/metadata"
     require "aws/response/parser"
     require "aws/response/properties"
-    require "aws/response/struct"
+    require "aws/response/types"
 
-    extend Properties
+    include Properties
+    include Types
 
     class << self
       def inherited(klass)
@@ -24,81 +24,53 @@ module AWS
       def abstract_response?
         ABSTRACT_RESPONSES.include?(name)
       end
+
+      def inspect
+        "#{self} (#{properties_for_inspect})"
+      end
     end
 
-    attr_reader :http_response
+    attr_reader :attributes, :http_response
+    delegate :code, :message, :to => :http_response
 
-    def initialize(http_response)
-      @http_response, @properties = http_response, {}
+    def initialize(http_response, attributes = [])
+      @http_response, @attributes = http_response, attributes
+      super()
     end
 
-    def inspect
-      "#<#{self.class}#{properties_for_inspect}>"
-    end
-
-    def [](key)
-      @properties[key]
-    end
-
-    def []=(key, value)
-      @properties[key] = value
+    def build_error
+      Error.new("HTTP Error #{code} #{message}")
     end
 
     def error?
-      http_response.code =~ /\A[45]/
-    end
-
-    def error
-      Error.new("TODO")
+      code =~ /\A[45]/
     end
 
     def error!
-      raise error
+      raise build_error
     end
 
     def informational?
-      http_response.code =~ /\A1/
+      code =~ /\A1/
     end
     alias info? informational?
 
-    def properties
-      self.class.properties
+    def inspect
+      "#<#{self.class} #{properties_for_inspect}>"
     end
 
     def redirect?
-      http_response.code =~ /\A3/
+      code =~ /\A3/
     end
     alias redirection? redirect?
 
+    def request_id
+      self["x-amzn-RequestId"]
+    end
+
     def success?
-      http_response.code =~ /\A2/
+      code =~ /\A2/
     end
     alias successful? success?
-
-    protected
-      def properties_for_inspect
-        " properties: " << self.properties.keys.join(", ") unless self.properties.empty?
-      end
-  end
-
-  class MetadataResponse < Response
-    include Response::Metadata
-  end
-
-  class ErrorResponse < Response
-    struct "Error" do
-      field "Type"
-      field "Code"
-      field "Message"
-    end
-    field "RequestId"
-
-    def error?
-      true
-    end
-
-    def error
-      Error.new("#{self.Error.Code}: #{self.Error.Message}")
-    end
   end
 end

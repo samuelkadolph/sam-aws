@@ -1,18 +1,14 @@
+require "active_support/core_ext/string/inflections"
 require "nokogiri"
 
 module AWS
   class Response
     class Parser < Nokogiri::XML::SAX::Document
-      class ParserError < Error
-      end
-
-      attr_reader :pusher, :response, :response_pool
+      attr_reader :response, :response_pool
 
       def initialize(http_response, response_pool = RESPONSES)
         @http_response, @response_pool = http_response, response_pool
-        @pusher = Nokogiri::XML::SAX::PushParser.new(self)
-
-        self.buffer, self.response, self.stack = "", nil, []
+        self.buffer, self.pusher, self.stack = "", Nokogiri::XML::SAX::PushParser.new(self), []
 
         if block_given?
           yield self
@@ -30,23 +26,17 @@ module AWS
       end
 
       def start_element(name, attributes = [])
-        if stack.empty?
-          self.response = find_response(name).new(@http_response)
-          stack.push(response)
-        elsif name == "member"
-          case array = stack.last
-          when ValueArray
-            # leave value array as top of stack
-          when StructArray
-            stack.push(array.new)
-          else
-            raise "encountered array when not expecting one"
-          end
-        else
-          property = stack.last.send(name)
-
-          case property
-          when Struct, StructArray, ValueArray
+        case stack.last
+        when nil
+          stack.push(self.response = find_response(name).new(@http_response, attributes))
+        when Types::StructArray
+          stack.push(stack.last.add)
+        when Types::ValueArray
+          stack.push(:value)
+        when Types::Struct, Response
+          name = name.underscore
+          case property = stack.last.send(name)
+          when Types::Struct, Types::StructArray, Types::ValueArray
             stack.push(property)
           else
             stack.push(name)
@@ -61,20 +51,17 @@ module AWS
       end
 
       def end_element(name)
-        if name == "member"
-          case stack.last
-          when Struct
-            stack.pop
-          else
-            stack.last << buffer
-          end
-        else
-          case property = stack.pop
-          when Struct, StructArray, ValueArray
-            # pop is all we have to do
-          when String
-            stack.last.send("#{property}=", buffer)
-          end
+        case stack.last
+        when Types::Struct, Types::StructArray, Types::ValueArray
+          stack.pop
+        when :value
+          stack.pop
+          stack.last << buffer
+        when String
+          property = stack.pop
+          stack.last.send("#{property}=", buffer)
+        when Response
+          stack.pop
         end
 
         self.buffer = ""
@@ -88,7 +75,7 @@ module AWS
         end
 
       private
-        attr_accessor :buffer, :stack
+        attr_accessor :buffer, :pusher, :stack
         attr_writer :response
     end
   end

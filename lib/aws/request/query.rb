@@ -1,9 +1,11 @@
 module AWS
-  require "aws/mixins/url_encoding"
+  require "aws/encoding/url"
+  require "aws/hash_sorting"
 
   class Request
     class Query < Hash
-      include Mixins::URLEncoding
+      include Encoding::URL
+      include HashSorting
 
       def initialize(query_string = nil)
         super()
@@ -14,20 +16,9 @@ module AWS
         end if query_string
       end
 
-      def sort
-        dup.sort!
-      end
-
-      def sort!
-        replace(Hash[sort_by { |k, v| k }])
-      end
-
-      def to_s
-        map do |key, value|
-          url_encode(key.to_s) << "=" << url_encode(value.to_s)
-        end.join("&")
-      end
-      alias to_str to_s
+      alias to_query_string to_url_encoded
+      alias to_s   to_query_string
+      alias to_str to_query_string
     end
   end
 end

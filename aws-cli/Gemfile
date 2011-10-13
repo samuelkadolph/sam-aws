@@ -7,10 +7,18 @@ path ".." do
   gem "sam-ebs-cli"
   gem "sam-ec2"
   gem "sam-ec2-cli"
+  gem "sam-elasticache"
+  gem "sam-elasticache-cli"
+  gem "sam-elb"
+  gem "sam-elb-cli"
+  gem "sam-r53"
+  gem "sam-r53-cli"
   gem "sam-rds"
   gem "sam-rds-cli"
   gem "sam-s3"
   gem "sam-s3-cli"
+  gem "sam-ses"
+  gem "sam-ses-cli"
 end
 
 gemspec

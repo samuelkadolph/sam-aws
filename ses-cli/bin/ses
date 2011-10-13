@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "ses/cli"
+SES::CLI::Main.start

@@ -1,0 +1,12 @@
+load "tasks/build.rake"
+
+namespace("aws") { load "../tasks/build.rake" }
+namespace("aws:cli:base") { load "../aws-cli-base/tasks/build.rake" }
+namespace("elasticache") { load "../elasticache/tasks/build.rake" }
+
+task "aws:cli:base:build" => "aws:build"
+task "aws:cli:base:install" => "aws:install"
+task "elasticache:build" => "aws:build"
+task "elasticache:install" => "aws:install"
+task "build" => %w[aws:cli:base:build elasticache:build]
+task "install" => %w[aws:cli:base:install elasticache:install]

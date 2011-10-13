@@ -1,9 +1,16 @@
+require "active_support/concern"
+
 module AWS
   class Account
+    require "aws/account/endpoint"
+
     module Region
-      def self.included(klass)
-        klass.send(:include, Endpoint) unless klass.include?(Endpoint)
-        klass.send(:option_reader, :region)
+      extend ActiveSupport::Concern
+
+      include Endpoint
+
+      included do
+        option_reader :region
       end
 
       def initialize(options = {})

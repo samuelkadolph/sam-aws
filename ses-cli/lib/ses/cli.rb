@@ -12,14 +12,14 @@ module SES
         account.delete_verified_email_address!(address, options)
       end
 
-      can_tableize_output
+      table_method_options
       desc "get-send-quota", "Prints current sending limits"
       def get_send_quota
         result = account.get_send_quota!(options).result
         tableize_send_quota_result(result).print
       end
 
-      can_tableize_output
+      table_method_options
       desc "get-send-statistics", "Pints sending statistics over the last two weeks"
       def get_send_statistics
         result = account.get_send_statistics!(options).result

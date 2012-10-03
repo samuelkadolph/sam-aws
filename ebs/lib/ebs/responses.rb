@@ -1,38 +1,34 @@
+require "aws/response"
+require "aws/responses"
+
 module EBS
+  require "ebs/types"
+
+  class Response < AWS::MetadataResponse
+  end
+
   class CheckDNSAvailabilityResponse < Response
-    struct :check_dns_availability_result do
-      check_dns_availability_result
-    end
+    field :CheckDNSAvailabilityResult, CheckDNSAvailabilityResult
   end
 
   class CreateApplicationResponse < Response
-    struct :create_application_result do
-      create_application_result
-    end
+    field :CreateApplicationResult, CreateApplicationResult
   end
 
   class CreateApplicationVersionResponse < Response
-    struct :create_application_version_result do
-      create_application_version_result
-    end
+    field :CreateApplicationVersionResult, CreateApplicationVersionResult
   end
 
   class CreateConfigurationTemplateResponse < Response
-    struct :create_configuration_template_result do
-      configuration_settings_description
-    end
+    field :CreateConfigurationTemplateResult, CreateConfigurationTemplateResult
   end
 
   class CreateEnvironmentResponse < Response
-    struct :create_environment_result do
-      create_environment_result
-    end
+    field :CreateEnvironmentResult, CreateEnvironmentResult
   end
 
   class CreateStorageLocationResponse < Response
-    struct :create_storage_location_result do
-      create_storage_location_result
-    end
+    field :CreateStorageLocationResult, CreateStorageLocationResult
   end
 
   class DeleteApplicationResponse < Response
@@ -48,51 +44,35 @@ module EBS
   end
 
   class DescribeApplicationVersionsResponse < Response
-    struct :describe_application_versions_result do
-      describe_application_versions_result
-    end
+    field :DescribeApplicationVersionsResult, DescribeApplicationVersionsResult
   end
 
   class DescribeApplicationsResponse < Response
-    struct :describe_applications_result do
-      describe_applications_result
-    end
+    field :DescribeApplicationsResult, DescribeApplicationsResult
   end
 
   class DescribeConfigurationOptionsResponse < Response
-    struct :describe_configuration_options_result do
-      describe_configuration_options_result
-    end
+    field :DescribeConfigurationOptionsResult, DescribeConfigurationOptionsResult
   end
 
   class DescribeConfigurationSettingsResponse < Response
-    struct :describe_configuration_settings_result do
-      describe_configuration_settings_result
-    end
+    field :DescribeConfigurationSettingsResult, DescribeConfigurationSettingsResult
   end
 
   class DescribeEnvironmentResourcesResponse < Response
-    struct :describe_environment_resources_result do
-      describe_environment_resources_result
-    end
+    field :DescribeEnvironmentResourcesResult, DescribeEnvironmentResourcesResult
   end
 
   class DescribeEnvironmentsResponse < Response
-    struct :describe_environments_result do
-      describe_environments_result
-    end
+    field :DescribeEnvironmentsResult, DescribeEnvironmentsResult
   end
 
   class DescribeEventsResponse < Response
-    struct :describe_events_result do
-      describe_events_result
-    end
+    field :DescribeEventsResult, DescribeEventsResult
   end
 
   class ListAvailableSolutionStacksResponse < Response
-    struct :list_available_solution_stacks_result do
-      list_available_solution_stacks_result
-    end
+    field :ListAvailableSolutionStacksResult, ListAvailableSolutionStacksResult
   end
 
   class RebuildEnvironmentResponse < Response
@@ -105,47 +85,33 @@ module EBS
   end
 
   class RetrieveEnvironmentInfoResponse < Response
-    struct :retrieve_environment_info_result do
-      retrieve_environment_info_result
-    end
+    field :RetrieveEnvironmentInfoResult, RetrieveEnvironmentInfoResult
   end
 
   class SwapEnvironmentCNAMEsResponse < Response
   end
 
   class TerminateEnvironmentResponse < Response
-    struct :terminate_environment_result do
-      terminate_environment_result
-    end
+    field :TerminateEnvironmentResult, TerminateEnvironmentResult
   end
 
   class UpdateApplicationResponse < Response
-    struct :update_application_result do
-      update_application_result
-    end
+    field :UpdateApplicationResult, UpdateApplicationResult
   end
 
   class UpdateApplicationVersionResponse < Response
-    struct :update_application_version_result do
-      update_application_version_result
-    end
+    field :UpdateApplicationVersionResult, UpdateApplicationVersionResult
   end
 
   class UpdateConfigurationTemplateResponse < Response
-    struct :update_configuration_template_result do
-      update_configuration_template_result
-    end
+    field :UpdateConfigurationTemplateResult, UpdateConfigurationTemplateResult
   end
 
   class UpdateEnvironmentResponse < Response
-    struct :update_environment_result do
-      update_environment_result
-    end
+    field :UpdateEnvironmentResult, UpdateEnvironmentResult
   end
 
   class ValidateConfigurationSettingsResponse < Response
-    struct :validate_configuration_settings_result do
-      validate_configuration_settings_result
-    end
+    field :ValidateConfigurationSettingsResult, ValidateConfigurationSettingsResult
   end
 end

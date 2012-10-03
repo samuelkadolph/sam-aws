@@ -1,17 +1,8 @@
 module AWS
-  require "aws/hash_sorting"
+  require "aws/sortable_hash"
 
   class Connection
-    class Query < Hash
-      include HashSorting
-
-      def initialize
-        super
-      end
-
-      def add_option(name, option)
-        self[name] = option if option
-      end
+    class Query < SortableHash
     end
   end
 end

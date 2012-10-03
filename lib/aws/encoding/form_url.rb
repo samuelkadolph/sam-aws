@@ -10,7 +10,6 @@ module AWS
       include URL
 
       def to_form_url_encoded
-        # replace with own method?
         to_url_encoded.gsub("%20", "+")
       end
     end

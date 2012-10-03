@@ -1,8 +1,12 @@
-require File.expand_path("../.gemspec_helper", __FILE__)
+require File.expand_path("../.gemspec", __FILE__)
 
-gemspec "aws" do |s|
-  s.add_dependency "activesupport", "~> 3.1"
-  s.add_dependency "i18n", "~> 0.6.0"
-  s.add_dependency "net-http-persistent", "~> 2.1"
-  s.add_dependency "nokogiri", "~> 1.5.0"
+gemspec "aws" do |gem|
+  gem.add_dependency "activesupport", "~> 3.2.8"
+  gem.add_dependency "net-http-persistent", "~> 2.1"
+  gem.add_dependency "nokogiri", "~> 1.5.5"
+
+  if RUBY_ENGINE == "jruby"
+    gem.platform = "jruby"
+    gem.add_dependency "jruby-openssl"
+  end
 end

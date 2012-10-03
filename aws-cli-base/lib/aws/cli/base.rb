@@ -4,16 +4,18 @@ require "thor"
 
 module AWS
   module CLI
-    require "aws/cli/all"
-    require "aws/cli/ec2_security_group"
-    require "aws/cli/tables"
-    require "aws/cli/waiting"
-
     class Base < Thor
+      require "aws/cli/base/all"
+      require "aws/cli/base/ec2_security_group"
+      require "aws/cli/base/tables"
+      require "aws/cli/base/types"
+      require "aws/cli/base/waiting"
+
       include Actions
       include All
       include EC2SecurityGroup
       include Tables
+      include Types
       include Waiting
 
       class << self
@@ -29,26 +31,18 @@ module AWS
           def default_credentials_file
             ENV["AWS_CREDENTIAL_FILE"] || File.expand_path("~/.aws-credentials")
           end
-
-        private
-          def can_wait_until_available
-            method_option :wait_until_available, aliases: "-w", default: false, type: :boolean
-            method_option :wait_until_available_delay, aliases: "-W", default: 5, type: :numeric
-          end
       end
 
-      method_option :debug, aliases: "-D", type: :boolean,
-                    desc: "Enables debugging mode"
-      method_option :verbose, aliases: "-V", type: :boolean,
-                    desc: "Enables verbose mode"
-      method_option :access_key, aliases: "-A", banner: "KEY", desc: "Specify the AWS access key to use"
-      method_option :secret_key, aliases: "-S", banner: "KEY", desc: "Specify the AWS secret key to use"
-      # method_option :prompt_secret_key, type: :boolean, desc: "Reads the secret key in from STDIN instead of as an argument"
-      method_option :credentials_file, aliases: "-C", banner: "FILE", default: default_credentials_file,
-                    desc: "Override the path to the credentials file"
-      def initialize(*)
-        super
+      type DateTime => "date" do |switch|
       end
+
+      class_option :debug, aliases: "-D", desc: "Enables debug mode", group: "Global", type: :boolean
+      class_option :verbose, aliases: "-V", desc: "Enables verbose mode", group: "Global", type: :boolean
+
+      class_option :access_key, aliases: "-A", banner: "KEY", desc: "Specify the AWS access key to use", group: "Credentials"
+      class_option :secret_key, aliases: "-S", banner: "KEY", desc: "Specify the AWS secret key to use", group: "Credentials"
+      class_option :credentials_file, aliases: "-C", banner: "FILE", default: default_credentials_file, desc: "Override the path to the credentials file", group: "Credentials"
+      class_option :prompt_secret_key, desc: "Reads the secret key in from STDIN instead of as an argument", type: :boolean, group: "Credentials"
 
       map "-v" => "version"
       desc "version", "Prints the version of sam-aws"
@@ -56,15 +50,15 @@ module AWS
         say "sam-aws #{AWS::VERSION}"
       end
 
-      no_tasks do
-        def invoke_task(*)
-          super
-        rescue => e
-          raise if options[:debug]
-          $stderr.puts e
-          exit 1
-        end
-      end
+      # no_tasks do
+      #   def invoke_task(*)
+      #     super
+      #   rescue => e
+      #     raise if options[:debug]
+      #     $stderr.puts e
+      #     exit 1
+      #   end
+      # end
 
       protected
         def access_key
@@ -106,6 +100,7 @@ module AWS
         end
 
         def get_credentials_from_options
+          # p options
           options.values_at(:access_key, :secret_key)
         end
 

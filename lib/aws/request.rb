@@ -4,7 +4,6 @@ module AWS
   class Request
     require "aws/request/headers"
     require "aws/request/methods"
-    require "aws/request/params"
     require "aws/request/query"
 
     MAXIMUM_REQUEST_URI_LENGTH = 4096
@@ -18,7 +17,7 @@ module AWS
       self.headers = Headers.new(headers)
       self.host = uri.host
       self.method = method
-      self.params = Params.new(params)
+      self.params = params
       self.path = uri.path
       self.query = Query.new(uri.query)
       self.query.merge!(query) if query
@@ -37,7 +36,7 @@ module AWS
     alias initialize_dup initialize_clone
 
     def auto
-      self.clone.tap do |request|
+      clone.tap do |request|
         if too_big_for_get?
           request.body = params.to_form_url_encoded
           request.headers["Content-Type"] = "application/x-www-form-urlencoded"
@@ -65,11 +64,7 @@ module AWS
 
     alias real_method method
     def method
-      if real_method == :auto
-        auto_method
-      else
-        real_method
-      end
+      real_method == :auto ? auto_method : real_method
     end
 
     def method=(method)
@@ -79,7 +74,7 @@ module AWS
         @method = method
       elsif method.is_a?(Class) and method < Method
         @method = method.new
-      elsif klass = @@methods[method]
+      elsif klass = methods[method]
         @method = klass.new
       else
         raise ArgumentError, "unknown method #{method}"
@@ -97,7 +92,9 @@ module AWS
         auto.perform(pool, &block)
       else
         warn "params are only supported for auto method requests" unless params.empty?
-        pool.connection_for(uri).request(method.klass.new(uri.request_uri, headers), body, &block)
+        request = method.klass.new(uri.request_uri, headers)
+        request.body = body
+        pool.request(uri, request, &block)
       end
     end
 

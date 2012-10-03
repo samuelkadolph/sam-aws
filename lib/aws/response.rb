@@ -1,37 +1,46 @@
+require "active_support/core_ext/class/attribute"
 require "active_support/core_ext/module/delegation"
+require "active_support/core_ext/object/inclusion"
+require "active_support/core_ext/string/inflections"
 
 module AWS
-  RESPONSES = {}
-  ABSTRACT_RESPONSES = %W[AWS::Response]
-
   class Response
     require "aws/response/parser"
-    require "aws/response/properties"
-    require "aws/response/types"
+    require "aws/typing"
 
-    include Properties
-    include Types
+    include Typing
+
+    class_attribute :abstract_responses, :responses, instance_reader: false, instance_writer: false
+    self.abstract_responses = [/::Response$/]
+    self.responses = {}
 
     class << self
+      def abstract_response?
+        abstract_responses.any? { |r| r === name }
+      end
+
       def inherited(klass)
-        AWS::RESPONSES[klass.response_name] = klass unless klass.abstract_response?
+        responses[klass.response_name] = klass unless klass.abstract_response?
       end
 
       def response_name
-        name.gsub(/^.*::/, "")
+        name.demodulize
       end
 
-      def abstract_response?
-        ABSTRACT_RESPONSES.include?(name)
-      end
-
-      def inspect
-        "#{self} (#{properties_for_inspect})"
+      private
+      def field(name, *rest)
+        name = name.to_s
+        super(name, *rest)
+        if name =~ /result$/i
+          define_method(:result) do
+            self[name]
+          end
+        end
       end
     end
 
     attr_reader :attributes, :http_response
-    delegate :code, :message, :to => :http_response
+    delegate :code, :message, to: :http_response
 
     def initialize(http_response, attributes = [])
       @http_response, @attributes = http_response, attributes
@@ -54,10 +63,6 @@ module AWS
       code =~ /\A1/
     end
     alias info? informational?
-
-    def inspect
-      "#<#{self.class} #{properties_for_inspect}>"
-    end
 
     def redirect?
       code =~ /\A3/

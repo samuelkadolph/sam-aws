@@ -4,6 +4,7 @@ module AWS
   require "aws/account"
   require "aws/authenticators"
   require "aws/connection"
+  require "aws/error"
   require "aws/errors"
   require "aws/request"
   require "aws/response"

@@ -28,7 +28,7 @@ module ElastiCache
         end
       end
 
-      can_tableize_output
+      table_method_options
       can_wait_until_done
       desc "create-cache-cluster ID", "Creates a new cache cluster"
       method_option :arn_topic, aliases: "-a"
@@ -52,14 +52,14 @@ module ElastiCache
         end
       end
 
-      can_tableize_output
+      table_method_options
       desc "create-cache-parameter-group FAMILY NAME DESCRIPTION", "Creates a new cache parameter group"
       def create_cache_parameter_group(family, name, description)
         result = account.create_cache_parameter_group!(family, name, description, options).result
         tableize_cache_parameter_groups([result.cache_parameter_group]).print
       end
 
-      can_tableize_output
+      table_method_options
       desc "create-cache-security-group NAME DESCRIPTION", "Creates a new cache security group"
       def create_cache_security_group(name, description)
         result = account.create_cache_security_group!(name, description, options).result
@@ -82,7 +82,7 @@ module ElastiCache
         account.delete_cache_security_group!(name, options)
       end
 
-      can_show_all
+      show_all_method_options
       desc "describe-cache-clusters", "Describes all or one cache cluster"
       method_option :id
       method_option :max_records
@@ -92,7 +92,7 @@ module ElastiCache
         tableize_cache_clusters(clusters).print
       end
 
-      can_show_all
+      show_all_method_options
       desc "describe-cache-parameter-groups", "Describes all or one cache parameter group"
       method_option :max_records
       method_option :name
@@ -101,7 +101,7 @@ module ElastiCache
         tableize_cache_parameter_groups(groups).print
       end
 
-      can_show_all
+      show_all_method_options
       desc "describe-cache-parameters GROUP", "Describes the parameters for a cache parameter group"
       method_option :max_records
       method_option :source
@@ -110,7 +110,7 @@ module ElastiCache
         tableize_cache_parameters(parameters).print
       end
 
-      can_show_all
+      show_all_method_options
       desc "describe-cache-security-groups", "Describe all or one cache security group"
       method_option :max_records
       method_option :name
@@ -119,7 +119,7 @@ module ElastiCache
         tableize_cache_security_groups(groups).print
       end
 
-      can_show_all
+      show_all_method_options
       desc "describe-engine-default-parameters FAMILY", "Describe the default parameters for a parameter group family"
       method_option :max_records
       def describe_engine_default_parameters(family)
@@ -127,7 +127,7 @@ module ElastiCache
         tableize_cache_parameters(parameters).print
       end
 
-      can_show_all
+      show_all_method_options
       desc "describe-events", "Describe all events in the past 14 days"
       method_option :duration
       method_option :end
@@ -140,7 +140,7 @@ module ElastiCache
         tableize_events(events).print
       end
 
-      can_tableize_output
+      table_method_options
       # can_wait_until_done
       desc "modify-cache-cluster ID", "Modifies a cache cluster"
       method_option :apply_immediately, type: :boolean

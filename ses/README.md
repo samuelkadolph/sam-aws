@@ -16,7 +16,7 @@ require "ses"
 account = SES::Account.new(access_key: "022QF06E7MXBSH9DHM02", secret_key: "kWcrlUX5JEDGM/LtmEENI/aVmYvHNif5zB+d9+ct")
 
 account.get_send_quota!.GetSendQuotaResult # => #<struct Max24HourSend="200.0", MaxSendRate="1.0", SentLast24Hours="2.0">
-account.send_email!("from@example.com", "Subject", "Body", :html => "<b>Hi!</b>")
+account.send_email!("from@example.com", "Subject", "Body", html: "<b>Hi!</b>")
 
 require "base64"
 require "mail"
@@ -55,7 +55,7 @@ environment or restrict loading the gem to only a specific environment.
 
 ```ruby
 group :production do
-  gem "sam-ses", :require => "ses/rails"
+  gem "sam-ses", require: "ses/rails"
 end
 ```
 

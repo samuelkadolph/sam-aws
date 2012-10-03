@@ -171,67 +171,6 @@ module RDS
         end
       end
 
-      # desc "authorize-db-security-group-ingress GROUP", ""
-      # method_option :cidrip, aliases: "-i"
-      # method_option :ec2_group_name, aliases: "-n"
-      # method_option :ec2_group_owner, aliases: "-o", default: "self"
-      # method_option :this, aliases: "-t"
-      # def authorize_db_security_group_ingress(group)
-      #   if options[:this]
-      #     result = account.authorize_db_security_group_ingress(group).Error
-      #     cidrip = result.Message =~ %r[(\d{1,3}(\.\d{1,3}){3}/\d{1,2})] && $1
-      #     account.authorize_db_security_group_ingress!(group, cidrip: cidrip)
-      #   elsif options[:ec2_group_name] or options[:cidrip]
-      #     options = self.options.dup
-      #     options[:ec2_group_owner] = account.account_id if options[:ec2_group_owner] == "self"
-      #     account.authorize_db_security_group_ingress!(group, options)
-      #   else
-      #     raise Error, "you must provide a --cidrip or --ec2-group-name or use --this"
-      #   end
-      # end
-      #
-      # can_wait_until_available
-      # desc "create-db-instance NAME", ""
-      # method_option :class, aliases: "-c", required: true, type: :string
-      # method_option :engine, aliases: "-e", required: true, type: :string
-      # method_option :db_name, aliases: "-n", required: true, type: :string
-      # method_option :db_password, aliases: "-p", required: true, type: :string
-      # method_option :db_username, aliases: "-u --db-user", required: true, type: :string
-      # method_option :size, aliases: "-s", required: true, type: :numeric
-      # def create_db_instance(db_name)
-      #   instance = account.create_db_instance!(db_name, options.dup).CreateDBInstanceResult.DBInstance
-      #   tablize_db_instances([instance]).print
-      #
-      #   wait_until_available(instance, :DBInstanceStatus) do
-      #     result = account.describe_db_instances!(id: instance.DBInstanceIdentifier).DescribeDBInstancesResult
-      #     result.DBInstances.first
-      #   end
-      # end
-      #
-      # desc "describe-db-instances", ""
-      # method_option :id, type: :string
-      # def describe_db_instances
-      #   instances = account.describe_all_db_instances!(options.dup)
-      #   tablize_db_instances(instances).print
-      # end
-      #
-      # desc "revoke-db-security-group-ingress GROUPNAME", ""
-      # method_option :cidrip
-      # method_option :ec2_group_name
-      # method_option :ec2_group_owner_id
-      # method_option :this
-      # def revoke_db_security_group_ingress(db_group_name)
-      #   if options[:this]
-      #     result = account.revoke_db_security_group_ingress(db_group_name).Error
-      #     cidrip = result.Message =~ %r[(\d{1,3}(\.\d{1,3}){3}/\d{1,2})] && $1
-      #     result = account.revoke_db_security_group_ingress!(db_group_name, cidrip: cidrip)
-      #   else
-      #     result = account.revoke_db_security_group_ingress!(db_group_name, options.dup)
-      #   end
-      #
-      #   puts result
-      # end
-
       protected
         def account
           RDS::Account.new(access_key: access_key, secret_key: secret_key)

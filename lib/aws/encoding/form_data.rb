@@ -6,6 +6,7 @@ module AWS
       extend ActiveSupport::Concern
 
       def to_form_data_encoded
+        raise NotImplementedError
       end
     end
   end

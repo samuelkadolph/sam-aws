@@ -9,7 +9,7 @@ module R53
     include XML
 
     DEFAULT_OPTIONS = {
-      authenticator: AWS::AWS3HTTPSAuthenticator,
+      authenticator: AWS::S3HTTPSAuthenticator,
       endpoint: "https://route53.amazonaws.com"
     }
     VERSION = "2011-05-05"

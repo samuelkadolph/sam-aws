@@ -1,4 +1,4 @@
-require File.expand_path("../../.gemspec_helper", __FILE__)
+require File.expand_path("../../.gemspec", __FILE__)
 
 gemspec "rds-cli" do |s|
   s.add_dependency "sam-aws-cli-base", AWS::VERSION

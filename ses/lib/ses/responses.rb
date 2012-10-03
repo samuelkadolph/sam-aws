@@ -1,39 +1,43 @@
 require "aws/response"
 
 module SES
-  class DeleteVerifiedEmailAddressResponse < Response
+  require "ses/types"
+
+  class DeleteIdentityResponse < AWS::MetadataResponse
+    field :DeleteIdentityResult
   end
 
-  class GetSendQuotaResponse < Response
-    struct :get_send_quota_result do
-      get_send_quota_result
-    end
+  class DeleteVerifiedEmailAddressResponse < AWS::MetadataResponse
   end
 
-  class GetSendStatisticsResponse < Response
-    struct :get_send_statistics_result do
-      get_send_statistics_result
-    end
+  class GetSendQuotaResponse < AWS::MetadataResponse
+    field :GetSendQuotaResult, GetSendQuotaResult
   end
 
-  class ListVerifiedEmailAddressesResponse < Response
-    struct :list_verified_email_addresses_result do
-      list_verified_email_addresses_result
-    end
+  class GetSendStatisticsResponse < AWS::MetadataResponse
   end
 
-  class SendEmailResponse < Response
-    struct :send_email_result do
-      send_email_result
-    end
+  class ListVerifiedEmailAddressesResponse < AWS::MetadataResponse
   end
 
-  class SendRawEmailResponse < Response
-    struct :send_raw_email_result do
-      send_raw_email_result
-    end
+  class SendEmailResponse < AWS::MetadataResponse
   end
 
-  class VerifyEmailAddressResponse < Response
+  class SendRawEmailResponse < AWS::MetadataResponse
+  end
+
+  class VerifyEmailAddressResponse < AWS::MetadataResponse
+  end
+
+  class VerifyEmailIdentityResponse < AWS::MetadataResponse
+    field :VerifyEmailIdentityResult, VerifyEmailIdentityResult
+  end
+
+  class ListIdentitiesResponse < AWS::MetadataResponse
+    field :ListIdentitiesResult, ListIdentitiesResult
+  end
+
+  class GetIdentityDkimAttributesResponse < AWS::MetadataResponse
+    field :GetIdentityDkimAttributesResult, GetIdentityDkimAttributesResult
   end
 end

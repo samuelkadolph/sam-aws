@@ -7,36 +7,26 @@ module AWS
 
       module ClassMethods
         private
-          def all(symbol, marker = :marker)
-            verb, collection_name = split_verb_from_collection_name(symbol)
+        def all(verb, collection, marker = :marker)
+          class_eval <<-RUBY, __FILE__, __LINE__ + 1
+            def #{verb}_all_#{collection}(*args)
+              options = args.last.is_a?(Hash) ? args.pop.dup : {}
+              collection = []
 
-            class_eval <<-RUBY, __FILE__, __LINE__ + 1
-              def #{verb}_all_#{collection_name}!(*args)
-                collection = []
+              result = #{verb}_#{collection}!(*(args << options)).result
+              collection.concat(result.#{collection})
 
-                options = args.last.is_a?(Hash) ? args.pop.dup : {}
-                result = #{symbol}!(*(args << options)).result
-                collection.concat(result.#{collection_name})
+              while result.marker
+                options[:#{marker}] = result.#{marker}
 
-                while result.#{marker}
-                  options[:marker] = result.#{marker}
-
-                  result = #{symbol}!(*(args << options)).result
-                  collection.concat(result.#{collection_name})
-                end
-
-                collection
+                result = #{verb}_#{collection}!(*(args << options)).result
+                collection.concat(result.#{collection})
               end
-            RUBY
-          end
 
-          def split_verb_from_collection_name(symbol)
-            if symbol =~ /^([^_]+)_(.+)$/
-              [$1, $2]
-            else
-              raise "#{symbol} must match verb_collection_name"
+              collection
             end
-          end
+          RUBY
+        end
       end
     end
   end

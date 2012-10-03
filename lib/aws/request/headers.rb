@@ -1,10 +1,8 @@
 module AWS
-  require "aws/hash_sorting"
+  require "aws/sortable_hash"
 
   class Request
-    class Headers < Hash
-      include HashSorting
-
+    class Headers < SortableHash
       def initialize(headers = {})
         super()
         merge!(headers) if headers

@@ -1,14 +1,9 @@
 GEMS = %W[ebs ebs:cli ec2 ec2:cli elasticache elasticache:cli elb elb:cli r53 r53:cli rds rds:cli s3 s3:cli ses ses:cli]
-DIRS = %W[ebs ebs-cli ec2 ec2-cli elasticache elasticache-cli elb elb-cli r53 r53-cli rds rds-cli s3 s3-cli ses ses-cli]
+DIRS = GEMS.map { |name| name.tr(":", "-") }
 
 load "tasks/build.rake"
+(%W[aws:cli aws:cli:base] + GEMS).each { |name| namespace(name) { load "tasks/build.rake" } }
 load "tasks/build/dependencies.rake"
-
-namespace("aws:cli") { load "aws-cli/tasks/build.rake" }
-namespace("aws:cli:base") { load "aws-cli-base/tasks/build.rake" }
-GEMS.zip(DIRS) do |name, dir|
-  namespace(name) { load File.expand_path("../#{dir}/tasks/build.rake", __FILE__) }
-end
 
 namespace "build" do
   desc "Build gems into the each gem's pkg directory"
@@ -19,7 +14,7 @@ namespace "install" do
   task "all" => %W[install aws:cli:install aws:cli:base:install] + GEMS.map { |name| "#{name}:install" }
 end
 
-helper = Bundler::GemHelper.new(Dir.pwd, "sam-aws")
+helper = Bundler::GemHelper.new(Dir.pwd)
 desc "Create tag #{helper.send(:version_tag)} and build and push each gem to Rubygems"
 task "release" do
   helper.send(:guard_clean)

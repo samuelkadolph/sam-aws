@@ -1,8 +1,10 @@
+require "active_support/core_ext/class/attribute"
 require "net/http"
 
 module AWS
   class Request
-    @@methods = {}
+    class_attribute :methods
+    self.methods = {}
 
     class Method
       def klass
@@ -20,24 +22,24 @@ module AWS
       KLASS = Net::HTTP::Delete
       VALUE = :delete
     end
-    @@methods[:delete] = DeleteMethod
+    methods[DeleteMethod::VALUE] = DeleteMethod
 
     class GetMethod < Method
       KLASS = Net::HTTP::Get
       VALUE = :get
     end
-    @@methods[:get] = GetMethod
+    methods[GetMethod::VALUE] = GetMethod
 
     class PostMethod < Method
       KLASS = Net::HTTP::Post
       VALUE = :post
     end
-    @@methods[:post] = PostMethod
+    methods[PostMethod::VALUE] = PostMethod
 
     class PutMethod < Method
       KLASS = Net::HTTP::Put
       VALUE = :put
     end
-    @@methods[:put] = PutMethod
+    methods[PutMethod::VALUE] = PutMethod
   end
 end

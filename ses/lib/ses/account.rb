@@ -1,3 +1,5 @@
+require "aws/bang"
+
 module SES
   require "ses/params_content"
 
@@ -7,7 +9,7 @@ module SES
     include AWS::Account::VersionInQuery
 
     DEFAULT_OPTIONS = {
-      authenticator: AWS::AWS3HTTPSAuthenticator,
+      authenticator: AWS::S3HTTPSAuthenticator,
       endpoint: "https://email.%{region}.amazonaws.com",
       region: "us-east-1"
     }
@@ -62,5 +64,23 @@ module SES
       auto "Action" => "VerifyEmailAddress", "EmailAddress" => address
     end
     bang :verify_email_address
+
+
+    def get_identity_dkim_attributes(*identities)
+      auto "Action" => "GetIdentityDkimAttributes" do
+        string.array["Identities"] = identities
+      end
+    end
+    bang :get_identity_dkim_attributes
+
+    def list_identities
+      auto "Action" => "ListIdentities"
+    end
+    bang :list_identities
+
+    def verify_email_identity(address)
+      auto "Action" => "VerifyEmailIdentity", "EmailAddress" => address
+    end
+    bang :verify_email_identity
   end
 end

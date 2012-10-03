@@ -1,42 +1,56 @@
 module AWS
-  ABSTRACT_RESPONSES << "AWS::MetadataResponse"
+  require "aws/type"
+  require "aws/types"
+
+  Response.abstract_responses += %W[AWS::MetadataResponse]
 
   class MetadataResponse < Response
-    struct :response_metadata do
-      field :request_id
-    end
+    field :ResponseMetadata, ResponseMetadata
   end
 
   class ErrorResponse < Response
-    struct :error do
-      field :type
-      field :code
-      field :message
+    class Error < Type
+      field :Code
+      field :Message
+      field :Type
     end
-    field :request_id
+
+    field :Error, Error
+    field :RequestId
+
+    def build_error
+      APIError.errors[error.code].new(error.code, error.message)
+    end
 
     def error?
       true
     end
-
-    def build_error
-      Error.new([error.code, error.message].compact.join(": "))
-    end
   end
 
   class AccessDeniedException < Response
-    field :message
-  end
+    field :Message
 
-  class GetUserResponse < MetadataResponse
-    struct :get_user_result, :result do
-      struct :user do
-        field :arn
-        field :create_date, DateTime
-        field :path
-        field :user_id, :id
-        field :user_name, :name
-      end
+    # TODO
+  end
+end
+
+module IAM
+  class GetUserResponse < AWS::MetadataResponse
+    class User < AWS::Type
+      field :Arn
+      field :CreateDate, DateTime
+      field :Path
+      field :UserId
+      field :UserName
+
+      alias id user_id
+      alias name user_name
     end
+
+    class GetUserResult < AWS::Type
+      field :User, User
+    end
+
+    field :GetUserResult, GetUserResult
   end
 end

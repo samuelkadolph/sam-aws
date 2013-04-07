@@ -2,6 +2,7 @@ GEMS = %W[ebs ebs:cli ec2 ec2:cli elasticache elasticache:cli elb elb:cli r53 r5
 DIRS = GEMS.map { |name| name.tr(":", "-") }
 
 load "tasks/build.rake"
+require "pry"; Pry.start(binding)
 (%W[aws:cli aws:cli:base] + GEMS).each { |name| namespace(name) { load "tasks/build.rake" } }
 load "tasks/build/dependencies.rake"
 

@@ -1,12 +1,15 @@
-namespace("aws") { load "../tasks/build.rake" }
-namespace("aws:cli:base") { load "../tasks/build.rake" }
-namespace("ses") { load "../tasks/build.rake" }
-
 load "../tasks/build.rake"
 
-task "aws:cli:base:build" => "aws:build"
-task "aws:cli:base:install" => "aws:install"
-task "ses:build" => "aws:build"
-task "ses:install" => "aws:install"
-task "build" => %W[aws:cli:base:build ses:build]
-task "install" => %W[aws:cli:base:install ses:install]
+
+# namespace("aws") { load "../tasks/build.rake" }
+# namespace("aws:cli:base") { load "../tasks/build.rake" }
+# namespace("ses") { load "../tasks/build.rake" }
+
+# load "../tasks/build.rake"
+
+# task "aws:cli:base:build" => "aws:build"
+# task "aws:cli:base:install" => "aws:install"
+# task "ses:build" => "aws:build"
+# task "ses:install" => "aws:install"
+# task "build" => %W[aws:cli:base:build ses:build]
+# task "install" => %W[aws:cli:base:install ses:install]

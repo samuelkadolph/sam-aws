@@ -1,6 +1,8 @@
-namespace(:aws) { load "../tasks/build.rake" }
-
 load "../tasks/build.rake"
 
-task :build => "aws:build"
-task :install => "aws:install"
+# namespace(:aws) { load "../tasks/build.rake" }
+
+# load "../tasks/build.rake"
+
+# task :build => "aws:build"
+# task :install => "aws:install"
